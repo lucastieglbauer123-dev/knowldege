@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Knowledge</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --card-bg: #161b22;
+    --border: #30363d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --accent: #58a6ff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.7;
+    padding: 48px 20px;
+  }
+  .container { max-width: 900px; margin: 0 auto; }
+  header { margin-bottom: 44px; }
+  header h1 { font-size: 2rem; margin: 0 0 12px 0; }
+  header p { color: var(--muted); margin: 0; max-width: 680px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 18px;
+  }
+  a.card {
+    display: block;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 22px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color .15s ease, transform .15s ease;
+  }
+  a.card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  a.card h2 { font-size: 1.05rem; margin: 0 0 8px 0; }
+  a.card p { color: var(--muted); font-size: .92rem; margin: 0; }
+
+  /* detail view */
+  #detail { display: none; }
+  #detail h1 { font-size: 1.8rem; margin: 0 0 6px 0; }
+  #detail .lead { color: var(--muted); margin: 0 0 28px 0; }
+  #detail h3 { font-size: 1rem; margin: 28px 0 6px 0; }
+  #detail p { margin: 0 0 14px 0; }
+  #detail ul { margin: 0 0 14px 0; padding-left: 20px; color: var(--text); }
+  #detail li { margin-bottom: 6px; }
+  .back {
+    display: inline-block;
+    color: var(--accent);
+    text-decoration: none;
+    font-size: .9rem;
+    margin-bottom: 24px;
+  }
+  .back:hover { text-decoration: underline; }
+  footer { color: var(--muted); margin-top: 56px; font-size: .85rem; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div id="overview">
+    <header>
+      <h1>Knowledge</h1>
+      <p>This is stuff I've picked up over years of coding and running Minecraft servers, including BreadSMP, CatSMP, KingSMP, and ValenMC. Plugins, mods, resource packs, and lately my own Minecraft launcher too.</p>
+    </header>
+
+    <div class="grid" id="grid"></div>
+
+    <footer>Built and maintained by Luca</footer>
+  </div>
+
+  <div id="detail">
+    <a class="back" href="javascript:void(0)" id="backlink">Back to overview</a>
+    <h1 id="d-title"></h1>
+    <p class="lead" id="d-lead"></p>
+    <div id="d-body"></div>
+    <footer>Built and maintained by Luca</footer>
+  </div>
+
+</div>
+
+<script>
+const topics = {
+  servers: {
+    title: "Server Administration",
+    lead: "Paper servers I've run, co-owned, or worked on.",
+    body: `
+      <p>I run BreadSMP, a Paper server in online mode hosted on Falix and MintServers. I was co-owner on KingSMP, ParadoxSMP, and CatSMP, and held high admin or developer roles on three more servers. Right now I'm senior mod on ValenMC.</p>
+      <h3>What I handle</h3>
+      <ul>
+        <li>Full server setup and host migration</li>
+        <li>Plugin selection, configuration, and resolving conflicts between them</li>
+        <li>Permission and rank structures</li>
+        <li>Writing server rules and moderation policy</li>
+        <li>Partnership setup and negotiating terms with other servers</li>
+      </ul>
+      <h3>Where my experience actually comes from</h3>
+      <p>Most of it is from running BreadSMP myself, where there's nobody else to hand a problem to. Working across multiple servers in different roles also means I've seen the same problems handled well and handled badly, which is worth more than reading about them.</p>
+    `
+  },
+  languages: {
+    title: "Languages",
+    lead: "What I code in, and what I speak.",
+    body: `
+      <h3>Programming</h3>
+      <p><strong>Java</strong> is my main language and the one I'm strongest in. Everything I've built for Minecraft runs on it, from Paper plugins to Fabric mods, so it's where most of my hours have gone.</p>
+      <p><strong>Python</strong> I use privately for smaller tools and scripts, usually when I want something working quickly rather than something built to last.</p>
+      <p><strong>C++</strong> I've worked with privately, outside of anything Minecraft related.</p>
+      <p>Alongside those I work regularly with <strong>HTML</strong>, <strong>CSS</strong>, and <strong>JavaScript</strong> for web side projects, <strong>JSON</strong> for resource packs and mod configs, and <strong>YAML</strong> for plugin configuration.</p>
+      <h3>Spoken</h3>
+      <ul>
+        <li>German, native</li>
+        <li>English, fluent</li>
+        <li>French, basic</li>
+      </ul>
+    `
+  },
+  plugins: {
+    title: "Plugin Development",
+    lead: "Custom Java plugins for the servers I run.",
+    body: `
+      <p>Every plugin I've made was built for one specific purpose, and each one did that job.</p>
+      <h3>What I've built and dealt with</h3>
+      <p>Most of my plugin work has been server side systems for BreadSMP and the servers I've worked on. That means writing against the Paper API, using the Adventure API for anything involving text and formatting, and designing configs that don't break when they're reloaded.</p>
+      <p>The parts I've spent the most time getting right are event handling, since that's where performance quietly disappears, and threading, since anything touching world state has to stay on the main thread while database and file work belongs off it.</p>
+    `
+  },
+  mods: {
+    title: "Fabric Mod Development",
+    lead: "Client side Fabric mods I've built.",
+    body: `
+      <h3>Projects</h3>
+      <ul>
+        <li><strong>CrosshairPlus</strong>, a Fabric mod adding configurable crosshairs, built for Minecraft 26.2</li>
+        <li><strong>Void Grin</strong>, a custom skin project shipped as a Fabric mod with ten variants, capes, and a 3D web viewer</li>
+      </ul>
+      <h3>What I work with</h3>
+      <ul>
+        <li>Fabric mod structure and the mod loading process</li>
+        <li>Mixins, including tracing why they fail after version changes</li>
+        <li>Rendering hooks</li>
+        <li>Keeping mods working across Minecraft versions</li>
+      </ul>
+    `
+  },
+  packs: {
+    title: "Resource Packs",
+    lead: "Custom resource pack work.",
+    body: `
+      <p>I build and maintain Parallax, my own resource pack. Pack work overlaps a lot with the server side, since custom items usually need both a plugin and a matching model.</p>
+      <h3>What I work with</h3>
+      <ul>
+        <li>Pack formats and what changes between Minecraft versions</li>
+        <li>Custom model data and item overrides</li>
+        <li>Texture work and keeping pack size reasonable</li>
+      </ul>
+    `
+  },
+  troubleshooting: {
+    title: "Client Troubleshooting",
+    lead: "Diagnosing crashes, conflicts, and performance problems.",
+    body: `
+      <p>This is probably the area I've spent the most raw hours on, both on my own setup and helping other people with theirs.</p>
+      <h3>What I've dealt with</h3>
+      <ul>
+        <li>Vulkan renderer conflicts</li>
+        <li>Mixin failures and tracing which mod caused them</li>
+        <li>Mod incompatibility hunting across large modlists</li>
+        <li>JVM and garbage collection tuning</li>
+        <li>Spark profiling to find real bottlenecks instead of guessing</li>
+        <li>Minecraft 26.2 compatibility work and crash diagnosis</li>
+      </ul>
+      <h3>How I approach it</h3>
+      <p>Almost all of it comes down to reading logs properly rather than changing things at random. With a big modlist I split it in half and test rather than removing mods one at a time.</p>
+    `
+  },
+  launcher: {
+    title: "Minecraft Launcher",
+    lead: "Bread Client, my own launcher.",
+    body: `
+      <p>Bread Client is my own Minecraft launcher, forked from the Modrinth App and built around how I actually play rather than trying to serve everyone.</p>
+      <h3>What it's taught me</h3>
+      <p>Launcher work means dealing with the parts of Minecraft that are normally invisible, like how versions get resolved and how mod loaders hook into the launch process. That's turned out to explain a lot of mod behaviour that previously just looked arbitrary.</p>
+    `
+  },
+  staff: {
+    title: "Staff Management",
+    lead: "Running staff teams, and being on them.",
+    body: `
+      <p>I've been on both sides of this. I've run staff teams on my own servers and served as staff on other people's, currently as senior mod on ValenMC.</p>
+      <h3>What I've done</h3>
+      <ul>
+        <li>Built and managed staff teams, including rank structures and responsibilities</li>
+        <li>Written conduct standards and server rules</li>
+        <li>Handled reports, punishments, and disputes</li>
+        <li>Set up and worked within staff verification and permission systems</li>
+        <li>Run partnerships and enforced partnership terms with other servers</li>
+      </ul>
+      <h3>How I work as staff</h3>
+      <p>I escalate things above my permission level rather than handling them myself, document decisions with screenshots and timestamps so they hold up later, and keep personal opinions out of moderation calls. Most problems come from staff who aren't clear on where their authority ends, so I'd rather ask than assume.</p>
+    `
+  }
+};
+
+const order = ["servers","languages","plugins","mods","packs","troubleshooting","launcher","staff"];
+
+var overview = document.getElementById("overview");
+var detail   = document.getElementById("detail");
+var grid     = document.getElementById("grid");
+
+function showOverview() {
+  detail.style.display = "none";
+  overview.style.display = "block";
+  window.scrollTo(0, 0);
+}
+
+function showTopic(key) {
+  var t = topics[key];
+  if (!t) return;
+  document.getElementById("d-title").textContent = t.title;
+  document.getElementById("d-lead").textContent  = t.lead;
+  document.getElementById("d-body").innerHTML    = t.body;
+  overview.style.display = "none";
+  detail.style.display = "block";
+  window.scrollTo(0, 0);
+}
+
+order.forEach(function (key) {
+  var t = topics[key];
+  var a = document.createElement("a");
+  a.className = "card";
+  a.href = "javascript:void(0)";
+  a.innerHTML = "<h2>" + t.title + "</h2><p>" + t.lead + "</p>";
+  a.addEventListener("click", function (e) {
+    e.preventDefault();
+    showTopic(key);
+  });
+  grid.appendChild(a);
+});
+
+document.getElementById("backlink").addEventListener("click", function (e) {
+  e.preventDefault();
+  showOverview();
+});
+
+showOverview();
+</script>
+</body>
+</html>
